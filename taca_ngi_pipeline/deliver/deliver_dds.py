@@ -232,9 +232,12 @@ class DDSProjectDeliverer(ProjectDeliverer):
             if os.path.splitext(itm)[0] not in samples_to_deliver
         ]
 
-        question = "\nProject stagepath: {}\nSamples: {}\nMiscellaneous: {}\n\nProceed with delivery ? "
+        question = "\nProject stagepath: {}\nSamples: {} (total: {})\nMiscellaneous: {} \n\nProceed with delivery ? "
         question = question.format(
-            soft_stagepath, ", ".join(samples_to_deliver), ", ".join(misc_to_deliver)
+            soft_stagepath,
+            ", ".join(samples_to_deliver),
+            len(samples_to_deliver),
+            ", ".join(misc_to_deliver),
         )
         if proceed_or_not(question):
             logger.info("Proceeding with delivery of {}".format(str(self)))

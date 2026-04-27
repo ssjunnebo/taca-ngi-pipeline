@@ -44,7 +44,6 @@ class DDSProjectDeliverer(ProjectDeliverer):
         projectid=None,
         sampleid=None,
         pi_email=None,
-        sensitive=True,
         add_user=None,
         fcid=None,
         do_release=False,
@@ -67,7 +66,6 @@ class DDSProjectDeliverer(ProjectDeliverer):
             self._set_pi_email(pi_email)
             self._set_other_member_details(add_user, ignore_orderportal_members)
             self._set_project_details(projectid, project_description)
-        self.sensitive = sensitive
         self.fcid = fcid
 
     def get_delivery_status(self, dbentry=None):
@@ -214,30 +212,6 @@ class DDSProjectDeliverer(ProjectDeliverer):
                 )
                 return False
 
-        # Check if the sensitive flag has been set in the correct way
-        question = (
-            "This project has been marked as SENSITIVE "
-            "(option --sensitive). Do you want to proceed with delivery? "
-        )
-        if not self.sensitive:
-            question = (
-                "This project has been marked as NON-SENSITIVE "
-                "(option --no-sensitive). Do you want to proceed with delivery? "
-            )
-        if proceed_or_not(question):
-            logger.info(
-                "Delivering {} with DDS. Project marked as SENSITIVE={}".format(
-                    str(self), self.sensitive
-                )
-            )
-        else:
-            logger.error(
-                "{} delivery has been aborted. Sensitive level was WRONG.".format(
-                    str(self)
-                )
-            )
-            return False
-
         # Now start with the real work
         status = True
 
@@ -355,23 +329,6 @@ class DDSProjectDeliverer(ProjectDeliverer):
         path_to_data = self.expand_path(self.datapath)
         runfolder_archive = os.path.join(path_to_data, self.fcid + ".tar")
         runfolder_md5file = runfolder_archive + ".md5"
-
-        question = "This project has been marked as SENSITIVE (option --sensitive). Do you want to proceed with delivery? "
-        if not self.sensitive:
-            question = "This project has been marked as NON-SENSITIVE (option --no-sensitive). Do you want to proceed with delivery? "
-        if proceed_or_not(question):
-            logger.info(
-                "Delivering {} with DDS. Project marked as SENSITIVE={}".format(
-                    str(self), self.sensitive
-                )
-            )
-        else:
-            logger.error(
-                "{} delivery has been aborted. Sensitive level was WRONG.".format(
-                    str(self)
-                )
-            )
-            return False
 
         status = True
 
@@ -564,8 +521,7 @@ class DDSProjectDeliverer(ProjectDeliverer):
             for member in self.other_member_details:
                 create_project_cmd.append("--researcher")
                 create_project_cmd.append(member)
-        if not self.sensitive:
-            create_project_cmd.append("--non-sensitive")
+
         dds_project_id = ""
         try:
             output = ""

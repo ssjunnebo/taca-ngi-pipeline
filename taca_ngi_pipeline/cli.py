@@ -113,11 +113,6 @@ def deliver(
     help="pi-email, to be specified if PI-email stored in statusdb does not correspond delivery PI-email",
 )
 @click.option(
-    "--sensitive/--no-sensitive",
-    default=True,
-    help="flag to specify if data contained in the project is sensitive or not",
-)
-@click.option(
     "--hard-stage-only",
     is_flag=True,
     default=False,
@@ -152,7 +147,6 @@ def project(
     statusdb_config=None,
     order_portal=None,
     pi_email=None,
-    sensitive=True,
     hard_stage_only=False,
     add_user=None,
     fc_delivery=False,
@@ -186,7 +180,6 @@ def project(
             d = _deliver_dds.DDSProjectDeliverer(
                 projectid=pid,
                 pi_email=pi_email,
-                sensitive=sensitive,
                 add_user=list(set(add_user)),
                 fcid=fc_delivery,
                 do_release=False,

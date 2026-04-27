@@ -535,14 +535,31 @@ class ProjectDeliverer(Deliverer):
             # right now, don't catch any errors since we're assuming any thrown
             # errors needs to be handled by manual intervention
             status = True
-            for sampleid in [
+            samples = [
                 sentry["sampleid"]
                 for sentry in db.project_sample_entries(db.dbcon(), self.projectid).get(
                     "samples", []
                 )
-            ]:
+            ]
+            samples_to_deliver = len(samples)
+            delivered_samples = 0
+            for sampleid in samples:
                 st = SampleDeliverer(self.projectid, sampleid).deliver_sample()
                 status = status and st
+                if st:
+                    delivered_samples += 1
+            if self.stage_only:
+                logger.info(
+                    "{}/{} samples have been staged for project {}".format(
+                        delivered_samples, samples_to_deliver, self.projectid
+                    )
+                )
+            else:
+                logger.info(
+                    "{}/{} samples have been delivered for project {}".format(
+                        delivered_samples, samples_to_deliver, self.projectid
+                    )
+                )
             # If sthlm, generate xml files
             if self.stage_only and getattr(self, "save_meta_info", False):
                 self.generate_xml_and_manifest_files()

@@ -323,31 +323,31 @@ class DDSProjectDeliverer(ProjectDeliverer):
         return status
 
     def deliver_run_folder(self):
-        """Symlink run folder to stage path, create DDS delivery project and upload data."""
+        """Symlink run folders to stage path, create DDS delivery project and upload data."""
         # Stage the data
         dst = self.expand_path(self.stagingpath)
         path_to_data = self.expand_path(self.datapath)
-        runfolder_archive = os.path.join(path_to_data, self.fcid + ".tar")
-        runfolder_md5file = runfolder_archive + ".md5"
 
         status = True
-
         create_folder(dst)
-        try:
-            os.symlink(runfolder_archive, os.path.join(dst, self.fcid + ".tar"))
-            os.symlink(runfolder_md5file, os.path.join(dst, self.fcid + ".tar.md5"))
-            logger.info(
-                "Symlinking files {} and {} to {}".format(
-                    runfolder_archive, runfolder_md5file, dst
+        for fcid in self.fcid:
+            runfolder_archive = os.path.join(path_to_data, fcid + ".tar")
+            runfolder_md5file = runfolder_archive + ".md5"
+            try:
+                os.symlink(runfolder_archive, os.path.join(dst, fcid + ".tar"))
+                os.symlink(runfolder_md5file, os.path.join(dst, fcid + ".tar.md5"))
+                logger.info(
+                    "Symlinking files {} and {} to {}".format(
+                        runfolder_archive, runfolder_md5file, dst
+                    )
                 )
-            )
-        except IOError as e:
-            logger.error(
-                "Unable to symlink files to {}. Please check that the files "
-                "exist and that the filenames match the flowcell ID. Error: \n {}".format(
-                    dst, e
+            except IOError as e:
+                logger.error(
+                    "Unable to symlink files to {}. Please check that the files "
+                    "exist and that the filenames match the flowcell ID. Error: \n {}".format(
+                        dst, e
+                    )
                 )
-            )
 
         delivery_id = ""
         try:

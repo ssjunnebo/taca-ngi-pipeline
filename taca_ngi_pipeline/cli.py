@@ -126,8 +126,9 @@ def deliver(
 )
 @click.option(
     "--fc-delivery",
+    multiple=True,
     type=click.STRING,
-    help="Flowcell id for delivering whole Illumnina run folder",
+    help="Flowcell ID for delivering whole Illumina run folder. Can be specified multiple times to deliver several flowcells.",
 )
 @click.option(
     "--project-desc",
@@ -156,7 +157,7 @@ def project(
     """Deliver the specified projects to the specified destination"""
     for pid in projectid:
         if ctx.parent.params["cluster"]:
-            if statusdb_config == None:
+            if statusdb_config is None:
                 logger.error(
                     "--statusdb-config or env variable $STATUS_DB_CONFIG"
                     " need to be set to perform {} delivery".format(
@@ -165,7 +166,7 @@ def project(
                 )
                 return 1
             load_yaml_config(statusdb_config.name)
-            if order_portal == None:
+            if order_portal is None:
                 logger.error(
                     "--order-portal or env variable $ORDER_PORTAL"
                     " need to be set to perform {} delivery".format(

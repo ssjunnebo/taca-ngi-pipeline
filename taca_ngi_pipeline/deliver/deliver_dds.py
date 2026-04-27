@@ -634,6 +634,13 @@ class DDSProjectDeliverer(ProjectDeliverer):
                     and binfo_email not in other_member_emails
                 ):
                     other_member_emails.append(binfo_email)
+                lab_email = prj_order.get("fields", {}).get("project_lab_email")
+                if (
+                    lab_email
+                    and lab_email != self.pi_email
+                    and lab_email not in other_member_emails
+                ):
+                    other_member_emails.append(lab_email)
             except (AssertionError, ValueError) as e:
                 pass  # nothing to worry, just move on
         if other_member_emails:
